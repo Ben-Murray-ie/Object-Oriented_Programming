@@ -3,8 +3,8 @@ package ie.atu.sw;
 import java.util.Scanner;
 
 public class Menu {
-	
-	//Instance variables for holding user input.
+
+	// Instance variables for holding user input.
 
 	private static Scanner s = new Scanner(System.in);
 
@@ -12,14 +12,14 @@ public class Menu {
 
 	private static String directory;
 
-	public static int n;
+	private static int n;
 
 	private static String outLoc;
 
 	private static int type;
-	
+
 	// Application Header
-	
+
 	public void showHeader() {
 		System.out.println("************************************************************");
 		System.out.println("*      ATU - Dept. Computer Science & Applied Physics      *");
@@ -29,8 +29,8 @@ public class Menu {
 		System.out.println("************************************************************");
 	}
 
-	//Method containing menu options and getter methods for user input values.
-	
+	// Method containing menu options and getter methods for user input values.
+
 	public static void showMenu() throws Exception {
 		System.out.println();
 		System.out.println("(1) Specify Text File Directory");
@@ -49,17 +49,20 @@ public class Menu {
 
 		while (keepRunning) {
 			switch (choice) {
-			case 1 -> getTextDirectory();
-			case 2 -> getSize();
-			case 3 -> getOutputFile();
-			case 4 -> getNgramType();
-			case 5 -> build(directory, n, outLoc, type);
-			case 6 -> shutDown();
+				case 1 -> setTextDirectory();
+				case 2 -> setSize();
+				case 3 -> setOutputFile();
+				case 4 -> setNgramType();
+				case 5 -> {
+					Builder b = new Builder();
+					b.build(directory, choice, outLoc, choice);
+				}
+				case 6 -> shutDown();
 			}
 		}
 	}
 
-	public static void getTextDirectory() throws Exception {
+	public static void setTextDirectory() throws Exception {
 		s.nextLine();
 		System.out.println("Please specify directory location:");
 		directory = s.nextLine();
@@ -67,7 +70,7 @@ public class Menu {
 		showMenu();
 	}
 
-	public static void getSize() throws Exception {
+	public static void setSize() throws Exception {
 		s.nextLine();
 		System.out.println("Please specify an n-gram size:");
 		n = s.nextInt();
@@ -75,7 +78,7 @@ public class Menu {
 		showMenu();
 	}
 
-	public static void getOutputFile() throws Exception {
+	public static void setOutputFile() throws Exception {
 		s.nextLine();
 		System.out.println("Please specify an output location:");
 		outLoc = s.nextLine();
@@ -83,12 +86,10 @@ public class Menu {
 		showMenu();
 	}
 
-	public static void getNgramType() throws Exception {
+	public static void setNgramType() throws Exception {
 		s.nextLine();
 		System.out.println("Please specify n-Gram type: Chunky (1) or Tiled (2) \n");
 		type = s.nextInt();
-		// Maybe add if statement here to specify "chunky" or "tiled", rather than 1 or
-		// 2.
 		if (type == 1) {
 			System.out.println("Thank you, specified n-Gram type is Chunky \n");
 		} else if (type == 2) {
@@ -97,24 +98,6 @@ public class Menu {
 			System.out.println("[ERROR] Invalid input. Please select (1) for Chunky or (2) for Tiled");
 		}
 		showMenu();
-	}
-
-	public static void build(String directory, int n, String outLoc, int type) throws Exception {
-		System.out.println("Building frequency table. Please wait.");
-		long start = System.nanoTime();
-		FileParser p = new FileParser();
-		Outputter o = new Outputter();
-		p.parseDir(directory, n, type);
-		o.getNewTableSize(p.table, o.newSize);
-		System.out.println("Final Table Size = " + o.newSize + " entries.");
-		o.createNewTable(p.table, o.newSize);
-		o.save(o.outTable, outLoc);
-		System.out.println("Build complete.");
-		long end = System.nanoTime();
-		long total = end - start;
-		double timeMillis = total / 1000000.0;
-		System.out.println("Build Time = " + timeMillis);
-		keepRunning = false;
 	}
 
 	public static void shutDown() {
